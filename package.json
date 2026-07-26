@@ -6,16 +6,23 @@
   "scripts": {
     "dev": "vinext dev",
     "build": "vinext build && node scripts/prepare-sites.mjs",
-    "start": "vinext start"
+    "start": "vinext start",
+    "dev:vinext": "vinext dev --port 3001",
+    "build:vinext": "vinext build",
+    "start:vinext": "vinext start",
+    "deploy:vinext": "vinext-cloudflare deploy --config dist/server/wrangler.json"
   },
   "dependencies": {
+    "@vinext/cloudflare": "^1.0.0-beta.4",
     "lucide-react": "^0.468.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "vinext": "^0.2.0"
+    "vinext": "^1.0.0-beta.4"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.47.0",
     "@vitejs/plugin-react": "^6.0.0",
-    "vite": "^8.0.0"
+    "vite": "^8.0.0",
+    "wrangler": "^4.114.0"
   }
 }
