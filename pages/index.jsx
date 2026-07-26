@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { createRoot } from "react-dom/client";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -14,7 +13,6 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
-import "./styles.css";
 
 const experiences = [
   {
@@ -128,7 +126,7 @@ const skills = {
   Toolkit: ["Docker", "Git", "GitHub", "Jira", "Agile/Scrum", "Power BI", "Tableau", "WordPress", "Elementor", "HubSpot", "CI/CD"],
 };
 
-function App() {
+export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeExperience, setActiveExperience] = useState(0);
 
@@ -299,5 +297,3 @@ function App() {
     </main>
   );
 }
-
-createRoot(document.getElementById("root")).render(<App />);
