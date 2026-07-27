@@ -80,7 +80,7 @@ function Hero() {
           </h1>
           <Reveal delay={0.12}>
             <p className="hero-line">
-              Full stack solutions for <em>complex</em> ideas
+              Full stack solutions for complex ideas
             </p>
             <p className="hero-summary">{profile.summary}</p>
           </Reveal>
@@ -206,8 +206,7 @@ function About() {
         <Reveal>
           <p className="eyebrow">About</p>
           <AnimatedHeading effect="blur">
-            Built to own it.
-            <em> Smart enough to evolve it.</em>
+            Built to own it. Smart enough to evolve it.
           </AnimatedHeading>
         </Reveal>
         <Reveal delay={0.1} className="about-copy">
@@ -290,8 +289,7 @@ function Experience() {
           <Reveal>
             <p className="eyebrow">Experience</p>
             <AnimatedHeading effect="slide">
-              Proof, not
-              <em> promises.</em>
+              Proof, not promises.
             </AnimatedHeading>
           </Reveal>
           <Reveal delay={0.08}>
@@ -396,8 +394,7 @@ function Projects() {
           <Reveal>
             <p className="eyebrow">Projects</p>
             <AnimatedHeading effect="spring">
-              Knows the playbook.
-              <em> Runs the play.</em>
+              Knows the playbook. Runs the play.
             </AnimatedHeading>
           </Reveal>
           <Reveal delay={0.08}>
@@ -442,8 +439,7 @@ function Skills() {
           <Reveal>
             <p className="eyebrow">Skills</p>
             <AnimatedHeading effect="slide">
-              Your idea.
-              <em> My complete toolkit.</em>
+              Your idea. My complete toolkit.
             </AnimatedHeading>
           </Reveal>
         </div>
@@ -455,11 +451,7 @@ function Skills() {
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              animate={{ y: [0, index % 2 === 0 ? -8 : 8, 0] }}
-              transition={{
-                opacity: { duration: 0.55, delay: index * 0.06 },
-                y: { duration: 4.5 + index * 0.4, repeat: Infinity, ease: "easeInOut", delay: index * 0.2 },
-              }}
+              transition={{ duration: 0.55, delay: index * 0.06 }}
               whileHover={{ scale: 1.02, y: -6 }}
             >
               <span>{group.title}</span>
@@ -482,8 +474,7 @@ function Education() {
           <Reveal>
             <p className="eyebrow">Education & credentials</p>
             <AnimatedHeading effect="rotate">
-              Education that
-              <em> powers the work.</em>
+              Education that powers the work.
             </AnimatedHeading>
           </Reveal>
         </div>

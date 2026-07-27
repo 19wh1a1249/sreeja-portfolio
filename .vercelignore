@@ -1,0 +1,6 @@
+reference-recording.mov
+*.mov
+node_modules
+.wrangler
+dist
+.git

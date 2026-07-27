@@ -30,12 +30,13 @@ export const experience = [
     bullets: [
       "Next.js, Tailwind CSS, Django REST APIs, and JWT authentication",
       "Interactive homeowner garage maps and detail-page booking flows",
+      "Used Cursor to accelerate feature delivery, debugging, and UI iteration",
       "20% faster deployments and a 15% lower bug rate",
     ],
     highlight: { value: "30%", label: "faster data retrieval" },
   },
   {
-    company: "Irenix",
+    company: "Irenix Empowerment Foundation",
     role: "Software Engineer Intern",
     period: "Sep — Dec 2025",
     location: "Sheridan, Wyoming",
@@ -44,6 +45,7 @@ export const experience = [
       "Created a HIPAA-compliant EHR experience covering secure records, provider matching, appointment booking, billing, reports, and audit trails.",
     bullets: [
       "Role-based access protected 100% of client records",
+      "Used Claude Code to speed up implementation, refactors, and test coverage",
       "Reduced administrative time by 30%",
       "Cut billing errors by 25% through a unified workflow",
     ],
@@ -131,6 +133,7 @@ export const skillGroups = [
   { title: "Backend", skills: ["Node.js", "Django", "Python", "C#", "ASP.NET Core", "REST APIs"] },
   { title: "Data & Cloud", skills: ["PostgreSQL", "MySQL", "SQL Server", "AWS", "GCP"] },
   { title: "Delivery", skills: ["Docker", "GitHub", "CI/CD", "Vercel", "Railway", "HubSpot", "Agile"] },
+  { title: "AI Tools", skills: ["Cursor", "Claude Code", "GitHub Copilot", "Gemini", "ChatGPT", "Prompt Engineering"] },
 ];
 
 export const education = [
@@ -172,7 +175,7 @@ export const certifications = [
 
 export const impactStats = [
   { value: "3+", label: "Years building", note: "Internal tools to customer platforms" },
-  { value: "5", label: "Engineering roles", note: "Across the US and India" },
-  { value: "4", label: "Product domains", note: "Healthcare · Fintech · SaaS · Construction" },
+  { value: "4+", label: "Engineering roles", note: "Across the US and India" },
+  { value: "4+", label: "Product domains", note: "Healthcare · Fintech · SaaS · Construction" },
   { value: "40%", label: "Peak workflow gain", note: "Measured improvements, not vanity metrics" },
 ];

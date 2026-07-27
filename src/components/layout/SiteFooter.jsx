@@ -11,8 +11,7 @@ export default function SiteFooter() {
         <Reveal>
           <p className="eyebrow light">Contact</p>
           <h2>
-            Complex is my
-            <em> comfort zone.</em>
+            Complex is my comfort zone.
           </h2>
           <p className="contact-lead">
             Based in {profile.location}. {profile.availability}.
