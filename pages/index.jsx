@@ -1,299 +1,541 @@
-import React, { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import {
-  ArrowDownRight,
+  motion,
+  useMotionTemplate,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "framer-motion";
+import {
   ArrowUpRight,
-  BriefcaseBusiness,
+  Cloud,
   Code2,
-  Download,
-  GraduationCap,
-  Linkedin,
-  Mail,
+  Database,
+  Github,
   MapPin,
-  Menu,
   Sparkles,
-  X,
 } from "lucide-react";
+import SiteHeader from "../src/components/layout/SiteHeader";
+import SiteFooter from "../src/components/layout/SiteFooter";
+import AnimatedHeading from "../src/components/ui/AnimatedHeading";
+import Reveal, { motionEase as ease } from "../src/components/ui/Reveal";
+import SpectralField from "../src/components/visuals/SpectralField";
+import {
+  certifications,
+  education,
+  experience,
+  impactStats,
+  profile,
+  projects,
+  skillGroups,
+} from "../src/data/portfolio";
 
-const experiences = [
-  {
-    role: "Full Stack Web Developer",
-    company: "Park My Ride, LLC",
-    location: "Houston, Texas, USA",
-    period: "Jan 2026 — Present",
-    accent: "lime",
-    summary:
-      "Building an end-to-end event parking platform with secure authentication, interactive maps, booking flows, payments, and responsive marketing experiences.",
-    wins: [
-      "Built RESTful APIs and JWT authentication with Next.js, Tailwind CSS, and Django.",
-      "Created interactive garage maps, detail popups, and event-driven navigation.",
-      "Improved data retrieval by 30%, deployment time by 20%, and reduced bugs by 15%.",
-    ],
-    tech: ["Next.js", "Django", "Tailwind CSS", "REST APIs", "JWT", "WordPress"],
-  },
-  {
-    role: "Software Engineer Intern",
-    company: "Irenix Empowerment Foundation",
-    location: "Sheridan, Wyoming, USA",
-    period: "Sep 2025 — Dec 2025",
-    accent: "peach",
-    summary:
-      "Designed a HIPAA-compliant EHR platform that made client care, provider matching, billing, and reporting simpler and more secure.",
-    wins: [
-      "Protected 100% of client records with role-based access control.",
-      "Improved appointment booking efficiency by 40% with intelligent matching.",
-      "Reduced administrative time by 30% and billing errors by 25%.",
-    ],
-    tech: ["React", "Healthcare", "RBAC", "Billing", "Dashboards", "Audit Logs"],
-  },
-  {
-    role: "Software Engineer",
-    company: "Accenture",
-    location: "Pune, Maharashtra, India",
-    period: "Aug 2023 — Dec 2023",
-    accent: "blue",
-    summary:
-      "Engineered reliable banking workflows across SQL Server, C#, and ASP.NET Core for high-volume customer loan systems.",
-    wins: [
-      "Improved data retrieval performance by 30% through stored procedure optimization.",
-      "Built business logic across 10+ loan validation and repayment modules.",
-      "Resolved 50+ priority defects and reduced post-deployment issues by 40%.",
-    ],
-    tech: ["C#", "ASP.NET Core", "SQL Server", "Banking", "Testing", "UAT"],
-  },
-  {
-    role: "Full Stack Software Developer",
-    company: "SMC-HNV",
-    location: "Bengaluru, Karnataka, India",
-    period: "Jul 2022 — Jun 2023",
-    accent: "lavender",
-    summary:
-      "Developed a cloud-based construction management product with scheduling, appointments, calendars, invoices, and mobile-ready dashboards.",
-    wins: [
-      "Reduced scheduling errors by 35% with a React component architecture.",
-      "Integrated 8 REST APIs and webhooks, improving booking efficiency by 40%.",
-      "Deployed with GitHub CI/CD to Vercel and Railway for 24/7 availability.",
-    ],
-    tech: ["React", "Webhooks", "REST APIs", "Vercel", "Railway", "CI/CD"],
-  },
-  {
-    role: "Software Engineer",
-    company: "SMC-HNV",
-    location: "Bengaluru, Karnataka, India",
-    period: "Jun 2021 — Jun 2022",
-    accent: "yellow",
-    summary:
-      "Built a secure construction cost estimation tool with real-time budgets, automated alerts, reporting, and project search.",
-    wins: [
-      "Implemented secure owner-only authentication and encrypted credentials.",
-      "Added automated alerts at 80% and 100% budget thresholds.",
-      "Improved budget accuracy by 20% and streamlined reporting with PDF export.",
-    ],
-    tech: ["Full Stack", "Authentication", "Budgets", "PDF Export", "Search"],
-  },
-];
-
-const projects = [
-  {
-    number: "01",
-    title: "Uber Data Analysis",
-    eyebrow: "Data story",
-    text: "Analyzed 50,000+ ride records to reveal travel patterns and demand clusters, improving clustering accuracy by 30% with elbow method and k-means.",
-    stack: "Tableau · Python · Data Visualization",
-    visual: "uber",
-  },
-  {
-    number: "02",
-    title: "Underwater Image Enhancement",
-    eyebrow: "Machine learning",
-    text: "Used ML models and OpenCV to correct underwater contrast and distortion—improving color vibrancy and clarity by 40% across test datasets.",
-    stack: "Python · Machine Learning · OpenCV",
-    visual: "ocean",
-  },
-  {
-    number: "03",
-    title: "E-Commerce Platform",
-    eyebrow: "Web experience",
-    text: "Created a scalable commerce platform with scheduling, secure data handling, and real-time notifications, cutting manual booking time by nearly 50%.",
-    stack: "HTML · CSS · JavaScript · PHP",
-    visual: "commerce",
-  },
-];
-
-const skills = {
-  Frontend: ["React", "Next.js", "JavaScript", "TypeScript", "HTML", "CSS", "Tailwind CSS", "Figma"],
-  Backend: ["Node.js", "Express.js", "Python", "Django", "Java", "C#", "C++", "ASP.NET Core", ".NET", "RESTful APIs", "Webhooks"],
-  "Data & Cloud": ["MySQL", "PostgreSQL", "SQL Server", "AWS", "GCP", "Vercel", "Railway"],
-  Toolkit: ["Docker", "Git", "GitHub", "Jira", "Agile/Scrum", "Power BI", "Tableau", "WordPress", "Elementor", "HubSpot", "CI/CD"],
-};
-
-export default function App() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [activeExperience, setActiveExperience] = useState(0);
-
-  useEffect(() => {
-    const onKey = (event) => event.key === "Escape" && setMenuOpen(false);
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-  const closeMenu = () => setMenuOpen(false);
+function Hero() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end end"],
+  });
+  const smooth = useSpring(scrollYProgress, { stiffness: 90, damping: 30 });
+  const titleY = useTransform(smooth, [0, 0.45], [0, -90]);
+  const titleOpacity = useTransform(smooth, [0, 0.4], [1, 0]);
+  const glowScale = useTransform(smooth, [0, 1], [0.8, 1.2]);
+  const mediaY = useTransform(smooth, [0, 0.95], [28, 0]);
+  const mediaHeight = useTransform(smooth, [0, 0.95], [36, 68]);
+  const mediaWidth = useTransform(smooth, [0, 0.95], [78, 90]);
+  const mediaRadius = useTransform(smooth, [0, 0.95], [22, 18]);
+  const mediaBorder = useTransform(smooth, [0, 0.95], [4, 3]);
+  const height = useMotionTemplate`${mediaHeight}vh`;
+  const width = useMotionTemplate`${mediaWidth}vw`;
+  const borderRadius = useMotionTemplate`${mediaRadius}px ${mediaRadius}px 0 0`;
+  const edgeBorder = useMotionTemplate`${mediaBorder}px`;
 
   return (
-    <main>
-      <nav className="nav shell" aria-label="Main navigation">
-        <a className="brand" href="#top" aria-label="Sreeja Vaddi home">SV<span>.</span></a>
-        <div className={`nav-links ${menuOpen ? "open" : ""}`}>
-          <button className="menu-close" onClick={closeMenu} aria-label="Close menu"><X /></button>
-          <a href="#work" onClick={closeMenu}>Experience</a>
-          <a href="#projects" onClick={closeMenu}>Projects</a>
-          <a href="#about" onClick={closeMenu}>About</a>
-          <a className="nav-cta" href="mailto:sreejavaddi168@gmail.com" onClick={closeMenu}>Let’s talk <ArrowUpRight size={16} /></a>
-        </div>
-        <button className="menu-button" onClick={() => setMenuOpen(true)} aria-label="Open menu"><Menu /></button>
-      </nav>
+    <section className="hero-scroll" ref={ref} id="home" aria-labelledby="hero-name">
+      <div className="hero-sticky">
+        <motion.div className="hero-copy" style={{ y: titleY, opacity: titleOpacity }}>
+          <motion.p
+            className="eyebrow"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease }}
+          >
+            {profile.role}
+          </motion.p>
+          <h1 id="hero-name" className="hero-name">
+            <motion.span
+              initial={{ opacity: 0, y: 80, filter: "blur(12px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{ duration: 1, ease }}
+            >
+              {profile.name.split(" ")[0]}
+            </motion.span>{" "}
+            <motion.span
+              initial={{ opacity: 0, y: 80, filter: "blur(12px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              transition={{ duration: 1, delay: 0.1, ease }}
+            >
+              {profile.name.split(" ")[1]}
+            </motion.span>
+          </h1>
+          <Reveal delay={0.12}>
+            <p className="hero-line">
+              Full stack solutions for <em>complex</em> ideas
+            </p>
+            <p className="hero-summary">{profile.summary}</p>
+          </Reveal>
+        </motion.div>
 
-      <header id="top" className="hero shell">
-        <div className="availability"><i /> Open to opportunities · Open to relocation</div>
-        <h1>I build digital products that <em>move</em> ideas forward.</h1>
-        <div className="hero-bottom">
-          <p>Full Stack Developer with 3+ years of experience crafting scalable products across healthcare, fintech, SaaS, and construction.</p>
-          <a className="round-link" href="#work" aria-label="Explore my work"><ArrowDownRight /></a>
-        </div>
-        <div className="hero-stage" aria-hidden="true">
-          <div className="stage-orbit orbit-one"><span>React</span></div>
-          <div className="stage-orbit orbit-two"><span>Python</span></div>
-          <div className="stage-card card-code"><Code2 /><b>Clean code</b><small>Built to scale</small></div>
-          <div className="stage-card card-impact"><Sparkles /><strong>40%</strong><small>booking efficiency</small></div>
-          <div className="stage-center"><span>S</span><div>FULL STACK<br/>DEVELOPER</div></div>
-          <div className="stage-pill pill-one">Thoughtful UX</div>
-          <div className="stage-pill pill-two">Reliable systems</div>
-        </div>
-      </header>
+        <motion.div className="hero-glow" style={{ scale: glowScale }} aria-hidden="true">
+          <SpectralField className="hero-field" />
+        </motion.div>
 
-      <section className="marquee" aria-label="Core technologies">
-        <div className="marquee-track">
-          {[...Array(2)].flatMap((_, i) =>
-            ["React", "Next.js", "Node.js", "Django", "TypeScript", "AWS", "SQL", "Figma"].map((item) => (
-              <React.Fragment key={`${i}-${item}`}><span>{item}</span><i>✦</i></React.Fragment>
-            ))
-          )}
-        </div>
-      </section>
-
-      <section className="proof shell">
-        <div className="section-head">
-          <div><span className="kicker">Impact, not just output</span><h2>Built with purpose.<br/>Measured by results.</h2></div>
-          <p>I care about the details behind the interface: fast data, dependable workflows, accessible experiences, and outcomes teams can feel.</p>
-        </div>
-        <div className="metric-grid">
-          <article className="metric metric-main"><span>01 / Performance</span><strong>30%</strong><p>faster data retrieval through optimized APIs and database queries.</p><div className="metric-bars"><i/><i/><i/><i/></div></article>
-          <article className="metric metric-dark"><span>02 / Reliability</span><strong>50+</strong><p>high-priority defects resolved to support zero-defect releases.</p><Code2 /></article>
-          <article className="metric metric-light"><span>03 / Efficiency</span><strong>40%</strong><p>improvement in booking workflows across healthcare and construction products.</p><Sparkles /></article>
-        </div>
-      </section>
-
-      <section id="work" className="experience">
-        <div className="shell">
-          <div className="section-head compact">
-            <div><span className="kicker">Selected experience</span><h2>From first sketch<br/>to shipped software.</h2></div>
-            <BriefcaseBusiness size={42} strokeWidth={1.3} />
+        <motion.div
+          className="hero-media"
+          style={{
+            y: mediaY,
+            height,
+            width,
+            borderRadius,
+            borderTopWidth: edgeBorder,
+            borderLeftWidth: edgeBorder,
+            borderRightWidth: edgeBorder,
+          }}
+        >
+          <div className="screen-chrome">
+            <i /><i /><i />
+            <span>sreeja.build</span>
           </div>
-          <div className="experience-layout">
-            <div className="experience-tabs" role="tablist" aria-label="Work experience">
-              {experiences.map((item, index) => (
-                <button
-                  key={`${item.company}-${item.period}`}
-                  className={activeExperience === index ? "active" : ""}
-                  onClick={() => setActiveExperience(index)}
-                  role="tab"
-                  aria-selected={activeExperience === index}
-                >
-                  <span>0{index + 1}</span><div><b>{item.company}</b><small>{item.period}</small></div><ArrowUpRight />
-                </button>
-              ))}
+          <div className="screen-body">
+            <div className="editor-lines">
+              <div className="editor-line"><b>01</b><span>const</span> product = <em>buildWithCare()</em>;</div>
+              <div className="editor-line"><b>02</b><span>const</span> impact = <em>measureResults()</em>;</div>
             </div>
-            <article className={`experience-card ${experiences[activeExperience].accent}`} key={activeExperience}>
-              <div className="experience-meta">
-                <span>{experiences[activeExperience].role}</span>
-                <span><MapPin size={14}/>{experiences[activeExperience].location}</span>
-              </div>
-              <h3>{experiences[activeExperience].company}</h3>
-              <p className="experience-summary">{experiences[activeExperience].summary}</p>
-              <ul>{experiences[activeExperience].wins.map((win) => <li key={win}>{win}</li>)}</ul>
-              <div className="tags">{experiences[activeExperience].tech.map((tech) => <span key={tech}>{tech}</span>)}</div>
-            </article>
-          </div>
-        </div>
-      </section>
 
-      <section id="projects" className="projects shell">
-        <div className="section-head compact">
-          <div><span className="kicker">Independent projects</span><h2>Curiosity, turned<br/>into something real.</h2></div>
-          <p>Selected explorations across data, machine learning, and product development.</p>
-        </div>
-        <div className="project-list">
-          {projects.map((project) => (
-            <article className="project" key={project.number}>
-              <div className={`project-visual ${project.visual}`}>
-                <span className="project-number">{project.number}</span>
-                {project.visual === "uber" && <div className="chart"><i/><i/><i/><i/><i/><i/></div>}
-                {project.visual === "ocean" && <div className="bubbles"><i/><i/><i/><i/><i/></div>}
-                {project.visual === "commerce" && <div className="shop-card"><span>NEW ORDER</span><strong>01</strong><small>Ready to ship</small></div>}
+            <div className="screen-main">
+              <div className="metric-col left" aria-hidden="true">
+                {[
+                  { color: "yellow", icon: Code2, value: "30%", label: "faster retrieval" },
+                  { color: "pink", icon: Sparkles, value: "40%", label: "booking lift" },
+                ].map((metric, index) => {
+                  const Icon = metric.icon;
+                  return (
+                    <motion.div
+                      key={metric.label}
+                      className={`float-card ${metric.color}`}
+                      animate={{ y: [0, index === 0 ? -8 : 8, 0] }}
+                      transition={{
+                        duration: 2.8,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: index * 0.2,
+                      }}
+                    >
+                      <Icon />
+                      <span>{metric.value}</span>
+                      <small>{metric.label}</small>
+                    </motion.div>
+                  );
+                })}
               </div>
-              <div className="project-copy">
-                <span className="kicker">{project.eyebrow}</span><h3>{project.title}</h3><p>{project.text}</p><small>{project.stack}</small>
+
+              <div className="code-window">
+                <motion.strong
+                  animate={{ scale: [1, 1.03, 1] }}
+                  transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  Let’s talk
+                </motion.strong>
+                <div className="hero-window-actions">
+                  {[
+                    { label: "Email", href: `mailto:${profile.email}` },
+                    { label: "Resume", href: profile.resume, download: true },
+                    { label: "GitHub", href: profile.github, external: true },
+                  ].map((action) => (
+                    <a
+                      key={action.label}
+                      href={action.href}
+                      download={action.download || undefined}
+                      target={action.external ? "_blank" : undefined}
+                      rel={action.external ? "noreferrer" : undefined}
+                    >
+                      <span>{action.label}</span>
+                      <ArrowUpRight size={14} />
+                    </a>
+                  ))}
+                </div>
               </div>
-            </article>
+
+              <div className="metric-col right" aria-hidden="true">
+                {[
+                  { color: "violet", icon: Database, value: "50k+", label: "records analyzed" },
+                  { color: "blue", icon: Cloud, value: "24/7", label: "cloud uptime" },
+                ].map((metric, index) => {
+                  const Icon = metric.icon;
+                  return (
+                    <motion.div
+                      key={metric.label}
+                      className={`float-card ${metric.color}`}
+                      animate={{ y: [0, index === 0 ? -8 : 8, 0] }}
+                      transition={{
+                        duration: 2.8,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: index * 0.2,
+                      }}
+                    >
+                      <Icon />
+                      <span>{metric.value}</span>
+                      <small>{metric.label}</small>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function About() {
+  return (
+    <section className="section about-section" id="about">
+      <div className="wrap about-layout">
+        <Reveal>
+          <p className="eyebrow">About</p>
+          <AnimatedHeading effect="blur">
+            Built to own it.
+            <em> Smart enough to evolve it.</em>
+          </AnimatedHeading>
+        </Reveal>
+        <Reveal delay={0.1} className="about-copy">
+          {profile.about.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
           ))}
-        </div>
-      </section>
-
-      <section id="about" className="about">
-        <div className="shell">
-          <div className="about-intro">
-            <span className="kicker">The toolkit</span>
-            <h2>Versatile by design.<br/><em>Full stack</em> by practice.</h2>
-            <p>My favorite work lives where strong systems meet clear, human-centered interfaces.</p>
+          <div className="about-meta">
+            <span><MapPin size={14} /> {profile.location}</span>
+            <span>{profile.availability}</span>
           </div>
-          <div className="skill-grid">
-            {Object.entries(skills).map(([group, items], index) => (
-              <article key={group}><span>0{index + 1}</span><h3>{group}</h3><div>{items.map(item => <i key={item}>{item}</i>)}</div></article>
+        </Reveal>
+        <div className="about-visual" aria-hidden="true">
+          <SpectralField className="about-field" grid />
+          <svg className="flow-lines" viewBox="0 0 800 520" preserveAspectRatio="none">
+            <motion.path
+              d="M400 90V175H160V250M400 175V250M400 175H640V250M160 300V390H300M400 300V390M640 300V390H500"
+              fill="none"
+              stroke="url(#flowStroke)"
+              strokeWidth="2.5"
+              initial={{ pathLength: 0, opacity: 0.2 }}
+              whileInView={{ pathLength: 1, opacity: 0.85 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.8, ease }}
+            />
+            <defs>
+              <linearGradient id="flowStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#ffd52d" />
+                <stop offset="45%" stopColor="#ef3fc4" />
+                <stop offset="100%" stopColor="#6550f5" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div className="flow-nodes">
+            {[
+              { label: "Product goal", className: "root", x: [0, 8, -6, 0], y: [0, -10, 8, 0], duration: 4.6 },
+              { label: "Understand", className: "n1", x: [0, 14, -8, 0], y: [0, -18, 10, 0], duration: 5.2 },
+              { label: "Design", className: "n2", x: [0, -12, 16, 0], y: [0, 14, -12, 0], duration: 6.1 },
+              { label: "Build", className: "n3", x: [0, 18, -10, 0], y: [0, -10, 16, 0], duration: 4.8 },
+              { label: "Measure", className: "n4", x: [0, -16, 12, 0], y: [0, 12, -14, 0], duration: 5.7 },
+              { label: "Improve", className: "n5", x: [0, 10, -14, 0], y: [0, -16, 8, 0], duration: 6.4 },
+            ].map((node, index) => (
+              <motion.span
+                key={node.label}
+                className={`flow-node ${node.className}`}
+                initial={{ opacity: 0, scale: 0.7 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                animate={{ x: node.x, y: node.y }}
+                transition={{
+                  opacity: { delay: 0.1 * index, duration: 0.5 },
+                  scale: { delay: 0.1 * index, type: "spring", stiffness: 120, damping: 14 },
+                  x: { duration: node.duration, repeat: Infinity, ease: "easeInOut" },
+                  y: { duration: node.duration, repeat: Infinity, ease: "easeInOut" },
+                }}
+              >
+                {node.label}
+              </motion.span>
             ))}
           </div>
-          <div className="education-grid">
-            <article><GraduationCap/><div><span>2024 — 2025</span><h3>MS, Information Technology</h3><p>Arizona State University</p><small>Data Visualization · Advanced Big Data Analytics · NLP for IT · Analyzing Big Data</small></div></article>
-            <article><GraduationCap/><div><span>2019 — 2023</span><h3>B.Tech, Information Technology</h3><p>BVRIT Hyderabad</p><small>Networks · Data Structures · Data Analytics · Machine Learning · Web Programming</small></div></article>
-          </div>
-          <div className="credentials">
-            <div><span>Certified by AWS</span><strong>Fundamentals of ML and AI</strong></div>
-            <div><span>Certified by AWS</span><strong>Foundations of Prompt Engineering</strong></div>
-            <div><span>Beyond the screen</span><strong>Led 5 cultural events for 200+ participants</strong></div>
-          </div>
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      <section className="contact shell">
-        <span className="kicker">Have a role or idea in mind?</span>
-        <h2>Let’s build something<br/><em>worth using.</em></h2>
-        <a className="email-link" href="mailto:sreejavaddi168@gmail.com">sreejavaddi168@gmail.com <ArrowUpRight /></a>
-        <div className="contact-details">
-          <span><MapPin/> Phoenix, Arizona · Open to relocation</span>
-          <a href="tel:+16233206836">+1 (623) 320-6836</a>
-        </div>
-      </section>
+function Experience() {
+  const trackRef = useRef(null);
+  const [active, setActive] = useState(0);
+  const { scrollYProgress } = useScroll({
+    target: trackRef,
+    offset: ["start start", "end end"],
+  });
+  const progress = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  const progressHeight = useMotionTemplate`${progress}%`;
 
-      <footer>
-        <div className="shell footer-inner">
-          <div className="brand footer-brand">SV<span>.</span></div>
-          <p>Full stack thinking.<br/>Human-centered results.</p>
-          <div className="footer-links">
-            <a href="https://linkedin.com/in/sreeja-vaddi-b90149221" target="_blank" rel="noreferrer"><Linkedin/> LinkedIn</a>
-            <a href="/Sreeja-Vaddi-Resume.pdf" download><Download/> Resume</a>
-            <a href="mailto:sreejavaddi168@gmail.com"><Mail/> Email</a>
-          </div>
-          <small>© {new Date().getFullYear()} Sreeja Vaddi. Designed and built with care.</small>
+  return (
+    <section className="section experience-section" id="experience">
+      <div className="wrap">
+        <div className="section-intro">
+          <Reveal>
+            <p className="eyebrow">Experience</p>
+            <AnimatedHeading effect="slide">
+              Proof, not
+              <em> promises.</em>
+            </AnimatedHeading>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <p>Every role solved a real problem. Every release left a measurable result.</p>
+          </Reveal>
         </div>
-      </footer>
-    </main>
+
+        <div className="exp-timeline" ref={trackRef}>
+          <aside className="exp-rail" aria-label="Roles">
+            <div className="exp-rail-line" aria-hidden="true">
+              <motion.span style={{ height: progressHeight }} />
+            </div>
+            {experience.map((role, index) => {
+              const isPresent = /present/i.test(role.period);
+              return (
+                <button
+                  key={`${role.company}-${role.period}-rail`}
+                  type="button"
+                  className={`exp-rail-item ${active === index ? "active" : ""}`}
+                  onClick={() => {
+                    const el = document.getElementById(`exp-step-${index}`);
+                    el?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }}
+                >
+                  <i />
+                  <span>
+                    {isPresent ? "Present" : role.period.split("—")[0].trim()}
+                  </span>
+                  <strong>{role.company}</strong>
+                </button>
+              );
+            })}
+          </aside>
+
+          <div className="exp-steps">
+            {experience.map((role, index) => {
+              const isPresent = /present/i.test(role.period);
+              return (
+                <div
+                  key={`${role.company}-${role.period}`}
+                  className="exp-step"
+                  id={`exp-step-${index}`}
+                >
+                  <motion.article
+                    className={`exp-panel ${role.color}`}
+                    onViewportEnter={() => setActive(index)}
+                    viewport={{ amount: 0.55 }}
+                    initial={{ opacity: 0.55, y: 36 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45, ease }}
+                  >
+                    <div className="exp-panel-top">
+                      <span>
+                        {isPresent && <b className="exp-present">Present</b>}
+                        {role.period} · {role.location}
+                      </span>
+                      <div className="exp-stat">
+                        <b>{role.highlight.value}</b>
+                        <small>{role.highlight.label}</small>
+                      </div>
+                    </div>
+                    <h3>{role.company}</h3>
+                    <p className="exp-role">{role.role}</p>
+                    <p>{role.summary}</p>
+                    <ul>
+                      {role.bullets.map((bullet) => (
+                        <li key={bullet}>{bullet}</li>
+                      ))}
+                    </ul>
+                  </motion.article>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="impact-row">
+          {impactStats.map((stat, index) => (
+            <motion.article
+              key={stat.label}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.08, type: "spring" }}
+            >
+              <strong>{stat.value}</strong>
+              <h3>{stat.label}</h3>
+              <p>{stat.note}</p>
+            </motion.article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Projects() {
+  return (
+    <section className="section projects-section" id="projects">
+      <div className="wrap">
+        <div className="section-intro">
+          <Reveal>
+            <p className="eyebrow">Projects</p>
+            <AnimatedHeading effect="spring">
+              Knows the playbook.
+              <em> Runs the play.</em>
+            </AnimatedHeading>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <p>Three projects. Three different kinds of problem solving.</p>
+          </Reveal>
+        </div>
+
+        <div className="project-fan">
+          {projects.map((project, index) => (
+            <motion.article
+              key={project.title}
+              className={`project-card ${project.color}`}
+              initial={{ opacity: 0, y: 120, rotate: (index - 1) * 10 }}
+              whileInView={{ opacity: 1, y: index === 1 ? -28 : 0, rotate: (index - 1) * 5 }}
+              viewport={{ once: true, margin: "-12%" }}
+              transition={{ duration: 0.85, delay: index * 0.1, ease }}
+              whileHover={{ y: -48, rotate: 0, zIndex: 5 }}
+            >
+              <span>{project.type}</span>
+              <h3>{project.title}</h3>
+              <p>{project.text}</p>
+              <div className="project-stack">
+                {project.stack.map((tech) => <i key={tech}>{tech}</i>)}
+              </div>
+              <strong>{project.result}</strong>
+              <a href={project.github} target="_blank" rel="noreferrer">
+                <Github size={15} /> View on GitHub <ArrowUpRight size={14} />
+              </a>
+            </motion.article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Skills() {
+  return (
+    <section className="section skills-section" id="skills">
+      <div className="wrap">
+        <div className="section-intro">
+          <Reveal>
+            <p className="eyebrow">Skills</p>
+            <AnimatedHeading effect="slide">
+              Your idea.
+              <em> My complete toolkit.</em>
+            </AnimatedHeading>
+          </Reveal>
+        </div>
+        <div className="skill-grid">
+          {skillGroups.map((group, index) => (
+            <motion.article
+              key={group.title}
+              className={`skill-card tone-${index + 1}`}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              animate={{ y: [0, index % 2 === 0 ? -8 : 8, 0] }}
+              transition={{
+                opacity: { duration: 0.55, delay: index * 0.06 },
+                y: { duration: 4.5 + index * 0.4, repeat: Infinity, ease: "easeInOut", delay: index * 0.2 },
+              }}
+              whileHover={{ scale: 1.02, y: -6 }}
+            >
+              <span>{group.title}</span>
+              {group.skills.map((skill) => (
+                <b key={skill}>{skill}</b>
+              ))}
+            </motion.article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Education() {
+  return (
+    <section className="section education-section" id="education">
+      <div className="wrap">
+        <div className="section-intro">
+          <Reveal>
+            <p className="eyebrow">Education & credentials</p>
+            <AnimatedHeading effect="rotate">
+              Education that
+              <em> powers the work.</em>
+            </AnimatedHeading>
+          </Reveal>
+        </div>
+        <div className="education-row">
+          {education.map((item, index) => (
+            <motion.article
+              key={item.degree}
+              className={`education-card ${item.tone}`}
+              initial={{ opacity: 0, y: 50, rotate: index ? 2 : -2 }}
+              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+              whileHover={{ y: -10 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.75, delay: index * 0.08, ease }}
+            >
+              <div className="education-orbit" aria-hidden="true" />
+              <span>{item.period}</span>
+              <h3>{item.degree}</h3>
+              <p>{item.school}</p>
+              <small>{item.detail}</small>
+              <b>{item.label}</b>
+            </motion.article>
+          ))}
+        </div>
+        <div className="cert-row">
+          {certifications.map((item, index) => (
+            <Reveal delay={index * 0.06} key={`${item.issuer}-${item.title}`}>
+              <article>
+                <span>{item.issuer}</span>
+                <h3>{item.title}</h3>
+                <p>{item.detail}</p>
+              </article>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function Portfolio() {
+  return (
+    <>
+      <SiteHeader />
+      <main id="top">
+        <Hero />
+        <About />
+        <Experience />
+        <Projects />
+        <Skills />
+        <Education />
+        <SiteFooter />
+      </main>
+    </>
   );
 }
